@@ -1,0 +1,17 @@
+{{template "base" .}} 
+ 
+{{define "title"}}Snippet {{end}} // the id of the snippet should be here
+ 
+{{define "body"}} 
+<div class='snippet'> 
+    <div class='metadata'> 
+        <strong></strong> //the title of the snippet should be here
+        <span></span> // the id fo the snippet
+    </div> 
+    <pre><code></code></pre> the content of the snippet
+    <div class='metadata'> 
+        <time>Created: </time> the time the snippet was created
+        <time>Expires: </time> the time the snippet will expire
+    </div> 
+</div> 
+{{end}}
