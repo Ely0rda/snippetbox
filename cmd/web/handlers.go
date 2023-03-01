@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 
@@ -19,24 +18,11 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	for _, snippet := range s {
-		fmt.Fprintf(w, "%v\n", snippet)
-	}
-	// files := []string{
-	// 	"./ui/html/home.page.html",
-	// 	"./ui/html/base.layout.html",
-	// 	"./ui/html/footer.partial.html",
-	// }
 
-	// ts, err := template.ParseFiles(files...)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// 	return
-	// }
-	// err = ts.Execute(w, nil)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// }
+	app.render(w, r, "home.page.html", &templateData{
+		Snippets: s,
+	})
+
 }
 
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
@@ -51,22 +37,11 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if err != nil {
 		app.serverError(w, err)
-	}
-	files := []string{
-		"./ui/html/show.page.html",
-		"./ui/html/base.layout.html",
-		"./ui/html/footer.partial.html",
-	}
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
 		return
 	}
-	//Notice that I am passing a model.Snippet struct as a parameter to Execute
-	err = ts.Execute(w, s)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	app.render(w, r, "show.page.html", &templateData{
+		Snippet: s,
+	})
 }
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
