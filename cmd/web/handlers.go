@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	// New import
+	"github.com/Ely0rda/snippetbox/pkg/forms"
 	"github.com/Ely0rda/snippetbox/pkg/models"
 )
 
@@ -43,15 +45,29 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("create a new snippet...."))
+	app.render(w, r, "create.page.html", &templateData{
+		Form: forms.New(nil),
+	})
 }
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 
-	title := "O snail"
-	content := "O snail\nClib Mount Fuji,\nBut slowly, slowly!\n\n- kobayashi"
-	expires := "7"
-	id, err := app.snippets.Insert(title, content, expires)
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	form := forms.New(r.PostForm)
+	form.Required("title", "content", "expires")
+	form.MaxLenght("title", 100)
+	form.PermittedValues("expires", "365", "1")
+	if !form.Valid() {
+		app.render(w, r, "create.page.html", &templateData{
+			Form: form,
+		})
+		return
+	}
+	id, err := app.snippets.Insert(form.Get("title"), form.Get("content"), form.Get("expires"))
 	if err != nil {
 		app.serverError(w, err)
 		return
